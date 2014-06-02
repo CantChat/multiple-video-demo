@@ -8,6 +8,8 @@
 
 #import "VideoPlayerViewController.h"
 #import "VideoPlayerView.h"
+#import "ViewController.h"
+
 @interface VideoPlayerViewController ()
 
 @end
@@ -104,6 +106,7 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
                          options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
                          context:MutlpleVideoDemoCurrentItemObservationContext];
         
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(playerItemDidPlayToEnd:)
                                                      name:AVPlayerItemDidPlayToEndTimeNotification
@@ -124,7 +127,10 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
         AVPlayerStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
         //The current state feedback
         if (status == AVPlayerStatusReadyToPlay) {
+            [self.player play];
             self.readyToPlay = YES;
+            
+            [self.viewController controlMediaVolume];
             
         } else {
             self.readyToPlay = NO;
@@ -158,6 +164,16 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
     self.isPlaying = NO;
 }
 
+-(void)muteMe
+{
+    if (self.player) {
+        self.player.muted = YES;
+
+    }
+    self.muted = YES;
+}
+
+
 //Playback did finish, reset the player
 -(void)playerItemDidPlayToEnd:(NSNotification *)notification
 {
@@ -166,8 +182,8 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
         self.isPlaying = NO;
         [self removeAllObserver];
         
-        //Reset the url, to perform initialization of player
-        self.playUrl = _playUrl;
+//        //Reset the url, to perform initialization of player
+//        self.playUrl = _playUrl;
     }
 }
 

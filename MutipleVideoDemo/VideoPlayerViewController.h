@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 @class VideoPlayerView;
-
+@class ViewController;
 
 @interface VideoPlayerViewController : UIViewController
 
@@ -22,7 +22,11 @@
 @property (nonatomic, assign) int num;
 @property (nonatomic, assign) BOOL readyToPlay;
 @property (nonatomic, assign) BOOL isPlaying;
+@property (nonatomic, assign) BOOL muted;    //default no
 
+@property (nonatomic, strong) ViewController * viewController;
 -(void)play;
 -(void)pause;
+
+-(void)muteMe;
 @end

@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "VideoPlayerViewController.h"
+#import "VideoPlayerView.h"
 
 @interface ViewController ()
 {
@@ -18,8 +19,11 @@
 }
 @end
 
-#define VideoCount 4
-#define videoSize CGSizeMake(484,272)
+//Change this number if you want to play more videos.
+#define VideoCount 6
+
+#define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
+#define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 #define playIconTag 123
 
 NSString * const kpReadyToPlay = @"readyToPlay";
@@ -33,37 +37,40 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
 	// Do any additional setup after loading the view, typically from a nib.
     self.navigationController.navigationBarHidden = YES;
 
+    NSLog(@"SCREEN_HEIGHT= %f, SCREEN_WIDTH = %f", SCREEN_HEIGHT, SCREEN_WIDTH);
+    CGSize videoSize = CGSizeMake(SCREEN_HEIGHT*0.48f, SCREEN_WIDTH*0.48f);
+    
     
     url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"NFS14.m4v" ofType:nil]];
     
-    videoView = [[UIView alloc] initWithFrame:self.view.bounds];
+    UIScrollView * backScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_HEIGHT, SCREEN_WIDTH)];
+    backScroll.backgroundColor = [UIColor clearColor];
+    backScroll.contentSize = CGSizeMake(self.view.bounds.size.height, (VideoCount/2+VideoCount%2)*(SCREEN_WIDTH*0.5f));
+    [self.view addSubview:backScroll];
+    
+    
+    videoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, backScroll.contentSize.width, backScroll.contentSize.height)];
     videoView.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:videoView];
+    [backScroll addSubview:videoView];
     
     playerArray = [[NSMutableArray alloc] init];
     iconArray = [[NSMutableArray alloc] init];
     for (int c = 0; c<VideoCount; c++) {
-        CGRect rect = CGRectMake((c%2)*(videoSize.width+30), c/2*(videoSize.height+30), videoSize.width, videoSize.height);
+        CGRect rect = CGRectMake((c%2)*(SCREEN_HEIGHT*0.5f), c/2*(SCREEN_WIDTH*0.5f), videoSize.width, videoSize.height);
         
         //The player!!!
         VideoPlayerViewController * videoPlayer = [[VideoPlayerViewController alloc] init];
-        videoPlayer.playUrl = url;
         videoPlayer.num = c;
         videoPlayer.view.frame = rect;
         [videoView addSubview:videoPlayer.view];
         [playerArray addObject:videoPlayer];
         
-        [videoPlayer addObserver:self
-                          forKeyPath:kpReadyToPlay
-                             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-                             context:MutlpleVideoDemoReadyToPlayObservationContext];
-        
         //Playing control gesture.
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playAndPause:)];
         UIView * touchView = [[UIView alloc] initWithFrame:rect];
-        touchView.backgroundColor = [UIColor clearColor];
+        touchView.backgroundColor = [UIColor blackColor];
         touchView.tag = c;
-        [self.view addSubview:touchView];
+        [backScroll addSubview:touchView];
         [touchView addGestureRecognizer:tap];
         
         UIImageView * playIcon = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
@@ -105,16 +112,48 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
             ((UIImageView *)[iconArray objectAtIndex:sender.view.tag]).hidden = NO;
         }
         
+    } else {
+        videoPlayer.playUrl = url;
+        [videoPlayer play];
+        sender.view.backgroundColor = [UIColor clearColor];
+        
+        [videoPlayer addObserver:self
+                      forKeyPath:kpReadyToPlay
+                         options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+                         context:MutlpleVideoDemoReadyToPlayObservationContext];
     }
     
 }
+
+//Player mute control
+-(void)controlMediaVolume
+{
+    @synchronized (self) {
+        for (int i = 0; i<[playerArray count]; i++) {
+            VideoPlayerViewController * player = [playerArray objectAtIndex:i];
+            if (i == 0) {
+                player.player.muted = NO;
+                player.muted = NO;
+                    
+            } else {
+                [player muteMe];
+
+            }
+        }
+    }
+}
+
 
 - (void)observeValueForKeyPath:(NSString*) path ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
     //If current player is ready to play, display the icon.
     if (context == MutlpleVideoDemoReadyToPlayObservationContext) {
         if (((VideoPlayerViewController *)object).readyToPlay) {
-            ((UIImageView *)[iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).hidden = NO;
+            [((VideoPlayerViewController *)object) play];
+            ((UIImageView *)[iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).superview.backgroundColor = [UIColor clearColor];
+            ((UIImageView *)[iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).hidden = YES;
+            
+        } else {
             
         }
     }

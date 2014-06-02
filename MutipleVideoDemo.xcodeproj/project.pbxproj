@@ -372,6 +372,7 @@
 				GCC_PREFIX_HEADER = "MutipleVideoDemo/MutipleVideoDemo-Prefix.pch";
 				INFOPLIST_FILE = "MutipleVideoDemo/MutipleVideoDemo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -385,6 +386,7 @@
 				GCC_PREFIX_HEADER = "MutipleVideoDemo/MutipleVideoDemo-Prefix.pch";
 				INFOPLIST_FILE = "MutipleVideoDemo/MutipleVideoDemo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -448,6 +450,7 @@
 				7D2F4EAC193B4AE000C93E20 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7D2F4EAD193B4AE000C93E20 /* Build configuration list for PBXNativeTarget "MutipleVideoDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -456,6 +459,7 @@
 				7D2F4EAF193B4AE000C93E20 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
