@@ -130,7 +130,7 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
             [self.player play];
             self.readyToPlay = YES;
             
-            [self.viewController controlMediaVolume];
+//            [self.viewController controlMediaVolume];
             
         } else {
             self.readyToPlay = NO;
@@ -181,6 +181,8 @@ static void * MutlpleVideoDemoStatusObservationContext = &MutlpleVideoDemoStatus
         self.readyToPlay = NO;
         self.isPlaying = NO;
         [self removeAllObserver];
+        
+        ((UIImageView *)[self.viewController.iconArray objectAtIndex:self.num]).hidden = NO;
         
 //        //Reset the url, to perform initialization of player
 //        self.playUrl = _playUrl;

@@ -11,5 +11,6 @@
 @interface ViewController : UIViewController
 
 
+@property (nonatomic, strong) NSMutableArray * iconArray;
 -(void)controlMediaVolume;
 @end

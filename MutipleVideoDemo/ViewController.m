@@ -15,7 +15,7 @@
     NSMutableArray * playerArray;
     UIView * videoView;
     NSURL * url;
-    NSMutableArray * iconArray;
+
 }
 @end
 
@@ -54,7 +54,7 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
     [backScroll addSubview:videoView];
     
     playerArray = [[NSMutableArray alloc] init];
-    iconArray = [[NSMutableArray alloc] init];
+    _iconArray = [[NSMutableArray alloc] init];
     for (int c = 0; c<VideoCount; c++) {
         CGRect rect = CGRectMake((c%2)*(SCREEN_HEIGHT*0.5f), c/2*(SCREEN_WIDTH*0.5f), videoSize.width, videoSize.height);
         
@@ -62,6 +62,7 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
         VideoPlayerViewController * videoPlayer = [[VideoPlayerViewController alloc] init];
         videoPlayer.num = c;
         videoPlayer.view.frame = rect;
+        videoPlayer.viewController = self;
         [videoView addSubview:videoPlayer.view];
         [playerArray addObject:videoPlayer];
         
@@ -78,7 +79,7 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
         playIcon.tag = playIconTag;
         playIcon.center = CGPointMake(touchView.frame.size.width/2, touchView.frame.size.height/2);
         [touchView addSubview:playIcon];
-        [iconArray addObject:playIcon];
+        [_iconArray addObject:playIcon];
         
     }
     
@@ -105,11 +106,11 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
     if ([videoPlayer readyToPlay]) {
         if (!videoPlayer.isPlaying) {
             [videoPlayer play];
-            ((UIImageView *)[iconArray objectAtIndex:sender.view.tag]).hidden = YES;
+            ((UIImageView *)[_iconArray objectAtIndex:sender.view.tag]).hidden = YES;
             
         } else {
             [videoPlayer pause];
-            ((UIImageView *)[iconArray objectAtIndex:sender.view.tag]).hidden = NO;
+            ((UIImageView *)[_iconArray objectAtIndex:sender.view.tag]).hidden = NO;
         }
         
     } else {
@@ -150,8 +151,8 @@ static void * MutlpleVideoDemoReadyToPlayObservationContext = &MutlpleVideoDemoR
     if (context == MutlpleVideoDemoReadyToPlayObservationContext) {
         if (((VideoPlayerViewController *)object).readyToPlay) {
             [((VideoPlayerViewController *)object) play];
-            ((UIImageView *)[iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).superview.backgroundColor = [UIColor clearColor];
-            ((UIImageView *)[iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).hidden = YES;
+            ((UIImageView *)[_iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).superview.backgroundColor = [UIColor clearColor];
+            ((UIImageView *)[_iconArray objectAtIndex:((VideoPlayerViewController *)object).num]).hidden = YES;
             
         } else {
             
